@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Inherit Purchase Order Form View -->
+    <record id="view_purchase_order_form_inherit" model="ir.ui.view">
+        <field name="name">purchase.order.form.inherit.rfq.bids</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Add Multi-Vendor RFQ field after partner_id -->
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="is_rfq_multi_vendor"/>
+                <field name="vendor_ids" widget="many2many_tags"
+                       attrs="{'invisible': [('is_rfq_multi_vendor', '=', False)]}"/>
+            </xpath>
+
+            <!-- Add Send to Vendors button before Confirm button -->
+            <xpath expr="//button[@name='button_confirm']" position="before">
+                <button name="action_send_rfq_to_vendors"
+                        string="Send to Vendors"
+                        type="object"
+                        class="btn-primary"
+                        attrs="{'invisible': [('is_rfq_multi_vendor', '=', False)]}"/>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>
