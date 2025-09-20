@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- Inherit Purchase Order Form View -->
     <record id="view_purchase_order_form_inherit" model="ir.ui.view">
         <field name="name">purchase.order.form.inherit.rfq.bids</field>
         <field name="model">purchase.order</field>
@@ -10,37 +11,27 @@
                 <field name="is_rfq_multi_vendor"/>
                 <field name="vendor_ids" widget="many2many_tags"
                        invisible="is_rfq_multi_vendor == False"/>
-                <field name="winning_bid_id" invisible="winning_bid_id == False"/>
             </xpath>
-            <!-- Add buttons before Confirm button -->
+            <!-- Add Send to Vendors button before Confirm button -->
             <xpath expr="//button[@name='button_confirm']" position="before">
                 <button name="action_send_rfq_to_vendors"
                         string="Send to Vendors"
                         type="object"
                         class="btn-primary"
                         invisible="is_rfq_multi_vendor == False"/>
-                <button name="action_compare_bids"
-                        string="Compare Bids"
-                        type="object"
-                        class="btn-secondary"
-                        invisible="is_rfq_multi_vendor == False or bid_ids == []"/>
             </xpath>
-            <!-- Add Bids tab -->
+           <!-- Add Bids tab -->
             <xpath expr="//notebook" position="inside">
                 <page string="Vendor Bids" invisible="is_rfq_multi_vendor == False">
                     <field name="bid_ids">
-                        <list>
+                        <tree>
                             <field name="vendor_id"/>
-                            <field name="amount"/>
+                            <field name="product_id"/>
+                            <field name="bid_date"/>
                             <field name="delivery_date"/>
                             <field name="state"/>
-                            <field name="is_winner"/>
-                            <button name="action_select_as_winner" 
-                                    string="Select Winner" 
-                                    type="object"
-                                    class="btn-success"
-                                    invisible="state != 'received'"/>
-                        </list>
+                            <button name="select_winning_bid" string="Select Winner" type="object"/>
+                        </tree>
                     </field>
                 </page>
             </xpath>

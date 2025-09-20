@@ -1,4 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Minimal view file -->
+    <!-- Purchase Bid Form View -->
+    <record id="view_purchase_bid_form" model="ir.ui.view">
+        <field name="name">purchase.bid.form</field>
+        <field name="model">purchase.bid</field>
+        <field name="arch" type="xml">
+            <form string="Purchase Bid">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="order_id"/>
+                        <field name="amount"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Purchase Bid List View -->
+    <record id="view_purchase_bid_list" model="ir.ui.view">
+        <field name="name">purchase.bid.list</field>
+        <field name="model">purchase.bid</field>
+        <field name="arch" type="xml">
+            <list string="Purchase Bids">
+                <field name="name"/>
+                <field name="order_id"/>
+                <field name="amount"/>
+            </list>
+        </field>
+    </record>
+    
+    <!-- Purchase Bid Action -->
+    <record id="action_purchase_bid" model="ir.actions.act_window">
+        <field name="name">Purchase Bids</field>
+        <field name="res_model">purchase.bid</field>
+        <field name="view_mode">list,form</field>
+    </record>
+    
+    <!-- Purchase Bid Menu -->
+    <menuitem id="menu_purchase_bids" 
+              name="Purchase Bids" 
+              parent="purchase.menu_procurement_management" 
+              action="action_purchase_bid"
+              sequence="10"/>
 </odoo>
