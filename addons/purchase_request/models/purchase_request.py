@@ -12,14 +12,32 @@ class PurchaseRequest(models.Model):
         ('draft', 'Draft'),
         ('submitted', 'Submitted'),
         ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
         ('done', 'Done')
     ], string='Status', default='draft')
+    rejection_reason = fields.Text(string='Rejection Reason')
 
     def action_submit(self):
         self.state = 'submitted'
 
     def action_approve(self):
         self.state = 'approved'
+
+    def action_reject(self):
+        return {
+            'name': 'Reject Purchase Request',
+            'type': 'ir.actions.act_window',
+            'res_model': 'purchase.request.rejection.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {'default_request_id': self.id}
+        }
+
+    def action_reset_to_draft(self):
+        self.write({
+            'state': 'draft',
+            'rejection_reason': False
+        })
 
     def action_done(self):
         self.state = 'done'
