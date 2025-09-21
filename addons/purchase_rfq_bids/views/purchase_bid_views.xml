@@ -6,12 +6,38 @@
         <field name="model">purchase.bid</field>
         <field name="arch" type="xml">
             <form string="Purchase Bid">
+                <header>
+                    <button name="action_submit_bid" type="object" string="Submit Bid" 
+                            invisible="state != 'draft'" 
+                            class="btn-primary"/>
+                    <button name="action_select_as_winner" type="object" string="Select as Winner" 
+                            invisible="state in ['won', 'lost']" 
+                            groups="purchase.group_purchase_user"
+                            class="btn-success"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,received,won,lost"/>
+                </header>
                 <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
                     <group>
-                        <field name="name"/>
-                        <field name="order_id"/>
-                        <field name="amount"/>
+                        <group>
+                            <field name="order_id"/>
+                            <field name="vendor_id"/>
+                            <field name="amount"/>
+                        </group>
+                        <group>
+                            <field name="delivery_date"/>
+                            <field name="is_winner" readonly="1"/>
+                        </group>
                     </group>
+                    <notebook>
+                        <page string="Terms & Conditions">
+                            <field name="terms_conditions" placeholder="Enter any special terms and conditions for this bid..."/>
+                        </page>
+                    </notebook>
                 </sheet>
             </form>
         </field>
@@ -25,7 +51,11 @@
             <list string="Purchase Bids">
                 <field name="name"/>
                 <field name="order_id"/>
+                <field name="vendor_id"/>
                 <field name="amount"/>
+                <field name="delivery_date"/>
+                <field name="state" decoration-success="state == 'won'" decoration-danger="state == 'lost'" decoration-info="state == 'received'"/>
+                <field name="is_winner"/>
             </list>
         </field>
     </record>

@@ -7,6 +7,7 @@
     'depends': ['purchase'],
     'data': [
         'security/ir.model.access.csv',
+        'security/ir_rule.xml',
         'views/purchase_bid_views.xml',
         'views/purchase_order_views.xml',
     ],

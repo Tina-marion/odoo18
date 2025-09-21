@@ -20,8 +20,19 @@ class PurchaseBid(models.Model):
     ], string="Status", default='draft')
     is_winner = fields.Boolean(string="Winning Bid", default=False)
     
+    def action_submit_bid(self):
+        """Submit bid - Available for vendors"""
+        for bid in self:
+            if bid.state == 'draft':
+                bid.state = 'received'
+        return True
+    
     def action_select_as_winner(self):
-        """Select this bid as winner and create PO"""
+        """Select this bid as winner and create PO - Only for Procurement Users"""
+        # Check if user has procurement rights
+        if not self.env.user.has_group('purchase.group_purchase_user'):
+            raise UserError(_('Only procurement users can select winning bids.'))
+            
         for bid in self:
             # Mark this bid as winner
             bid.write({'state': 'won', 'is_winner': True})
@@ -45,6 +56,20 @@ class PurchaseBid(models.Model):
                 price_per_line = bid.amount / total_lines
                 for line in bid.order_id.order_line:
                     line.price_unit = price_per_line
+        
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'reload',
+        }
+        
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Created Purchase Order',
+            'res_model': 'purchase.order',
+            'res_id': purchase_order.id,
+            'view_mode': 'form',
+            'target': 'current',
+        }
         
         return {
             'type': 'ir.actions.client',

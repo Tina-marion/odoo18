@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Vendors can only see and edit their own bids -->
+    <record id="bid_vendor_rule" model="ir.rule">
+        <field name="name">Vendor Bid Access Rule</field>
+        <field name="model_id" ref="model_purchase_bid"/>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+        <field name="domain_force">[('vendor_id.user_ids', 'in', user.id)]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- Purchase users can see all bids -->
+    <record id="bid_purchase_user_rule" model="ir.rule">
+        <field name="name">Purchase User Bid Access Rule</field>
+        <field name="model_id" ref="model_purchase_bid"/>
+        <field name="groups" eval="[(4, ref('purchase.group_purchase_user'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+</odoo>

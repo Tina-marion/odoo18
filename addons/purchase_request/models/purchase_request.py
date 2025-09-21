@@ -51,9 +51,24 @@ class PurchaseRequest(models.Model):
         if self.state != 'approved':
             raise UserError('Only approved purchase requests can be converted to RFQ.')
         
+        # Get a default vendor or use the first available vendor
+        default_vendor = self.env['res.partner'].search([
+            ('is_company', '=', True),
+            ('supplier_rank', '>', 0)
+        ], limit=1)
+        
+        if not default_vendor:
+            # Create a placeholder vendor if none exists
+            default_vendor = self.env['res.partner'].create({
+                'name': 'TBD - To Be Determined',
+                'is_company': True,
+                'supplier_rank': 1,
+                'email': 'tbd@example.com',
+            })
+        
         # Create the RFQ
         rfq_vals = {
-            'partner_id': False,  # Will be set when vendors are assigned
+            'partner_id': default_vendor.id,
             'state': 'draft',
             'order_line': [],
             'origin': self.name,  # Reference to the purchase request
@@ -62,11 +77,14 @@ class PurchaseRequest(models.Model):
         
         # Create order lines from request lines
         for line in self.line_ids:
+            # Use the product's purchase UoM or default UoM
+            product_uom = line.product_id.uom_po_id or line.product_id.uom_id
+            
             order_line_vals = {
                 'product_id': line.product_id.id,
                 'name': line.description or line.product_id.name,
                 'product_qty': line.product_qty,
-                'product_uom': line.uom_id.id,
+                'product_uom': product_uom.id,
                 'price_unit': 0.0,  # To be filled by vendors
                 'date_planned': fields.Datetime.now(),
             }
